@@ -20,9 +20,20 @@ app.use(express.json());
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/fullstack-website', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
 })
-.then(() => console.log('تم الاتصال بقاعدة البيانات بنجاح'))
-.catch(err => console.error('خطأ في الاتصال بقاعدة البيانات:', err));
+.then(() => {
+  console.log('✅ تم الاتصال بقاعدة البيانات بنجاح');
+  console.log('📍 رابط الاتصال:', process.env.MONGODB_URI);
+})
+.catch(err => {
+  console.error('❌ خطأ في الاتصال بقاعدة البيانات:', err);
+  console.error('🔍 تأكد من:');
+  console.error('   1. صحة رابط MongoDB Atlas');
+  console.error('   2. إعدادات الشبكة في Atlas');
+  console.error('   3. اسم المستخدم وكلمة المرور');
+});
 
 // إنشاء مستخدم مدير افتراضي إذا لم يكن موجود
 const createDefaultAdmin = async () => {
