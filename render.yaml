@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: fullstack-website
+    env: node
+    buildCommand: npm run install-all && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        value: mongodb+srv://harbib:RtxbQaUGEUTAsjWG@cluster0.ewgis0n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 
