@@ -2,15 +2,7 @@ services:
   - type: web
     name: fullstack-website
     env: node
-    buildCommand: |
-      npm install
-      cd client && npm install
-      npm run build
-      cd ..
-      mkdir -p public
-      cp -r client/build/* public/
-      echo "✅ Frontend build completed and copied to public"
-      ls -la public
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV

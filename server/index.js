@@ -255,14 +255,26 @@ if (process.env.NODE_ENV === 'production') {
   console.log('🔧 إعداد الإنتاج - خدمة ملفات Frontend');
   console.log('📁 مسار build:', path.join(__dirname, '../client/build'));
   
-  // التحقق من وجود مجلد build
+  // التحقق من وجود مجلد public (البديل لمجلد build)
+  const publicPath = path.join(__dirname, '../public');
   const buildPath = path.join(__dirname, '../client/build');
   const fs = require('fs');
   
+  console.log('🔍 البحث عن مجلد public في:', publicPath);
   console.log('🔍 البحث عن مجلد build في:', buildPath);
   console.log('📁 محتويات المجلد الحالي:', fs.readdirSync(__dirname));
   
-  if (fs.existsSync(buildPath)) {
+  // أولوية لمجلد public
+  if (fs.existsSync(publicPath)) {
+    console.log('✅ مجلد public موجود');
+    console.log('📁 محتويات public:', fs.readdirSync(publicPath));
+    app.use(express.static(publicPath));
+
+    app.get('*', (req, res) => {
+      console.log('📄 طلب صفحة:', req.path);
+      res.sendFile(path.join(publicPath, 'index.html'));
+    });
+  } else if (fs.existsSync(buildPath)) {
     console.log('✅ مجلد build موجود');
     console.log('📁 محتويات build:', fs.readdirSync(buildPath));
     app.use(express.static(buildPath));
@@ -272,7 +284,7 @@ if (process.env.NODE_ENV === 'production') {
       res.sendFile(path.join(buildPath, 'index.html'));
     });
   } else {
-    console.log('❌ مجلد build غير موجود - سيتم عرض API فقط');
+    console.log('❌ مجلد public و build غير موجودان - سيتم عرض API فقط');
     console.log('🔍 محاولة البحث في مسارات أخرى...');
     
     // محاولة البحث في مسارات أخرى
