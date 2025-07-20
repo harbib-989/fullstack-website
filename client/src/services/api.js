@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // تحديد عنوان الخادم حسب البيئة
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-heroku-app-name.herokuapp.com/api'
+  ? window.location.origin + '/api'
   : 'http://localhost:5000/api';
 
 // إنشاء instance من axios
