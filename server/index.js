@@ -259,8 +259,12 @@ if (process.env.NODE_ENV === 'production') {
   const buildPath = path.join(__dirname, '../client/build');
   const fs = require('fs');
   
+  console.log('🔍 البحث عن مجلد build في:', buildPath);
+  console.log('📁 محتويات المجلد الحالي:', fs.readdirSync(__dirname));
+  
   if (fs.existsSync(buildPath)) {
     console.log('✅ مجلد build موجود');
+    console.log('📁 محتويات build:', fs.readdirSync(buildPath));
     app.use(express.static(buildPath));
 
     app.get('*', (req, res) => {
@@ -269,6 +273,28 @@ if (process.env.NODE_ENV === 'production') {
     });
   } else {
     console.log('❌ مجلد build غير موجود - سيتم عرض API فقط');
+    console.log('🔍 محاولة البحث في مسارات أخرى...');
+    
+    // محاولة البحث في مسارات أخرى
+    const possiblePaths = [
+      path.join(__dirname, 'client/build'),
+      path.join(__dirname, '../build'),
+      path.join(__dirname, 'build')
+    ];
+    
+    for (const testPath of possiblePaths) {
+      if (fs.existsSync(testPath)) {
+        console.log('✅ تم العثور على build في:', testPath);
+        app.use(express.static(testPath));
+        app.get('*', (req, res) => {
+          console.log('📄 طلب صفحة:', req.path);
+          res.sendFile(path.join(testPath, 'index.html'));
+        });
+        return;
+      }
+    }
+    
+    console.log('❌ لم يتم العثور على build في أي مسار');
   }
 }
 
