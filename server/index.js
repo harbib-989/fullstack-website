@@ -59,14 +59,16 @@ const createDefaultAdmin = async () => {
 
 createDefaultAdmin();
 
-// مسار للصفحة الرئيسية
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'مرحباً بك في API الموقع الإلكتروني',
-    version: '1.0.0',
-    status: 'running'
+// مسار للصفحة الرئيسية - سيتم التعامل معه من قبل Frontend في الإنتاج
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/', (req, res) => {
+    res.json({ 
+      message: 'مرحباً بك في API الموقع الإلكتروني',
+      version: '1.0.0',
+      status: 'running'
+    });
   });
-});
+}
 
 // Routes
 
@@ -268,16 +270,11 @@ if (process.env.NODE_ENV === 'production') {
     console.log('✅ مجلد public موجود');
     console.log('📁 محتويات public:', fs.readdirSync(publicPath));
     
-    // خدمة الملفات الثابتة
+    // خدمة الملفات الثابتة أولاً
     app.use(express.static(publicPath));
     
-    // جميع الطلبات غير API تذهب إلى Frontend
-    app.get('*', (req, res, next) => {
-      // إذا كان الطلب يبدأ بـ /api، اتركه للـ API routes
-      if (req.path.startsWith('/api')) {
-        return next();
-      }
-      
+    // ثم جميع الطلبات غير API تذهب إلى Frontend
+    app.get('*', (req, res) => {
       console.log('📄 طلب صفحة Frontend:', req.path);
       res.sendFile(path.join(publicPath, 'index.html'));
     });
@@ -285,16 +282,11 @@ if (process.env.NODE_ENV === 'production') {
     console.log('✅ مجلد build موجود');
     console.log('📁 محتويات build:', fs.readdirSync(buildPath));
     
-    // خدمة الملفات الثابتة
+    // خدمة الملفات الثابتة أولاً
     app.use(express.static(buildPath));
     
-    // جميع الطلبات غير API تذهب إلى Frontend
-    app.get('*', (req, res, next) => {
-      // إذا كان الطلب يبدأ بـ /api، اتركه للـ API routes
-      if (req.path.startsWith('/api')) {
-        return next();
-      }
-      
+    // ثم جميع الطلبات غير API تذهب إلى Frontend
+    app.get('*', (req, res) => {
       console.log('📄 طلب صفحة Frontend:', req.path);
       res.sendFile(path.join(buildPath, 'index.html'));
     });
@@ -316,12 +308,7 @@ if (process.env.NODE_ENV === 'production') {
         console.log('✅ تم العثور على build في:', testPath);
         app.use(express.static(testPath));
         
-        app.get('*', (req, res, next) => {
-          // إذا كان الطلب يبدأ بـ /api، اتركه للـ API routes
-          if (req.path.startsWith('/api')) {
-            return next();
-          }
-          
+        app.get('*', (req, res) => {
           console.log('📄 طلب صفحة Frontend:', req.path);
           res.sendFile(path.join(testPath, 'index.html'));
         });
