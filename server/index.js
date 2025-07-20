@@ -279,7 +279,9 @@ if (process.env.NODE_ENV === 'production') {
     const possiblePaths = [
       path.join(__dirname, 'client/build'),
       path.join(__dirname, '../build'),
-      path.join(__dirname, 'build')
+      path.join(__dirname, 'build'),
+      path.join(__dirname, 'public'),
+      path.join(__dirname, '../public')
     ];
     
     for (const testPath of possiblePaths) {

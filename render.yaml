@@ -7,8 +7,10 @@ services:
       cd client && npm install
       npm run build
       cd ..
-      echo "✅ Frontend build completed"
-      ls -la client/build
+      mkdir -p public
+      cp -r client/build/* public/
+      echo "✅ Frontend build completed and copied to public"
+      ls -la public
     startCommand: npm start
     envVars:
       - key: NODE_ENV
