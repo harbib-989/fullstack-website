@@ -72,14 +72,21 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Routes
 
-// تسجيل الدخول
+// تسجيل الدخول - يعمل بأي اسم مستخدم أو بريد إلكتروني
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     
     console.log('محاولة تسجيل دخول:', email);
     
-    const user = await User.findOne({ email });
+    // البحث عن المستخدم بالبريد الإلكتروني أو اسم المستخدم
+    const user = await User.findOne({ 
+      $or: [
+        { email: email },
+        { username: email }
+      ]
+    });
+    
     if (!user) {
       console.log('المستخدم غير موجود:', email);
       return res.status(401).json({ message: 'بيانات غير صحيحة' });
@@ -97,7 +104,7 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    console.log('تم تسجيل الدخول بنجاح للمستخدم:', email);
+    console.log('تم تسجيل الدخول بنجاح للمستخدم:', user.username);
 
     res.json({
       token,
