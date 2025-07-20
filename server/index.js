@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const User = require('./models/User');
@@ -251,11 +252,24 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
 
 // خدمة الملفات الثابتة في الإنتاج
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  console.log('🔧 إعداد الإنتاج - خدمة ملفات Frontend');
+  console.log('📁 مسار build:', path.join(__dirname, '../client/build'));
+  
+  // التحقق من وجود مجلد build
+  const buildPath = path.join(__dirname, '../client/build');
+  const fs = require('fs');
+  
+  if (fs.existsSync(buildPath)) {
+    console.log('✅ مجلد build موجود');
+    app.use(express.static(buildPath));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-  });
+    app.get('*', (req, res) => {
+      console.log('📄 طلب صفحة:', req.path);
+      res.sendFile(path.join(buildPath, 'index.html'));
+    });
+  } else {
+    console.log('❌ مجلد build غير موجود - سيتم عرض API فقط');
+  }
 }
 
 app.listen(PORT, () => {

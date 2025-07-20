@@ -2,7 +2,11 @@ services:
   - type: web
     name: fullstack-website
     env: node
-    buildCommand: npm run install-all && npm run build
+    buildCommand: |
+      npm install
+      cd client && npm install
+      npm run build
+      cd ..
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -10,6 +14,6 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: MONGODB_URI
-        value: mongodb+srv://harbib:RtxbQaUGEUTAsjWG@cluster0.ewgis0n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://harbib:RtxbQaUGEUTAsjWG@cluster0.ewgis0n.mongodb.net/fullstack-website?retryWrites=true&w=majority
       - key: PORT
         value: 10000 
