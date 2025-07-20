@@ -253,7 +253,6 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
 // خدمة الملفات الثابتة في الإنتاج
 if (process.env.NODE_ENV === 'production') {
   console.log('🔧 إعداد الإنتاج - خدمة ملفات Frontend');
-  console.log('📁 مسار build:', path.join(__dirname, '../client/build'));
   
   // التحقق من وجود مجلد public (البديل لمجلد build)
   const publicPath = path.join(__dirname, '../public');
@@ -268,19 +267,35 @@ if (process.env.NODE_ENV === 'production') {
   if (fs.existsSync(publicPath)) {
     console.log('✅ مجلد public موجود');
     console.log('📁 محتويات public:', fs.readdirSync(publicPath));
+    
+    // خدمة الملفات الثابتة
     app.use(express.static(publicPath));
-
-    app.get('*', (req, res) => {
-      console.log('📄 طلب صفحة:', req.path);
+    
+    // جميع الطلبات غير API تذهب إلى Frontend
+    app.get('*', (req, res, next) => {
+      // إذا كان الطلب يبدأ بـ /api، اتركه للـ API routes
+      if (req.path.startsWith('/api')) {
+        return next();
+      }
+      
+      console.log('📄 طلب صفحة Frontend:', req.path);
       res.sendFile(path.join(publicPath, 'index.html'));
     });
   } else if (fs.existsSync(buildPath)) {
     console.log('✅ مجلد build موجود');
     console.log('📁 محتويات build:', fs.readdirSync(buildPath));
+    
+    // خدمة الملفات الثابتة
     app.use(express.static(buildPath));
-
-    app.get('*', (req, res) => {
-      console.log('📄 طلب صفحة:', req.path);
+    
+    // جميع الطلبات غير API تذهب إلى Frontend
+    app.get('*', (req, res, next) => {
+      // إذا كان الطلب يبدأ بـ /api، اتركه للـ API routes
+      if (req.path.startsWith('/api')) {
+        return next();
+      }
+      
+      console.log('📄 طلب صفحة Frontend:', req.path);
       res.sendFile(path.join(buildPath, 'index.html'));
     });
   } else {
@@ -300,8 +315,14 @@ if (process.env.NODE_ENV === 'production') {
       if (fs.existsSync(testPath)) {
         console.log('✅ تم العثور على build في:', testPath);
         app.use(express.static(testPath));
-        app.get('*', (req, res) => {
-          console.log('📄 طلب صفحة:', req.path);
+        
+        app.get('*', (req, res, next) => {
+          // إذا كان الطلب يبدأ بـ /api، اتركه للـ API routes
+          if (req.path.startsWith('/api')) {
+            return next();
+          }
+          
+          console.log('📄 طلب صفحة Frontend:', req.path);
           res.sendFile(path.join(testPath, 'index.html'));
         });
         return;
