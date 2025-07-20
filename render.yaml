@@ -10,4 +10,6 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: MONGODB_URI
-        value: mongodb+srv://harbib:RtxbQaUGEUTAsjWG@cluster0.ewgis0n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 
+        value: mongodb+srv://harbib:RtxbQaUGEUTAsjWG@cluster0.ewgis0n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - key: PORT
+        value: 10000 
